@@ -20,13 +20,17 @@
 package net.william278.huskhomes.hook;
 
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 import net.william278.huskhomes.BukkitHuskHomes;
 import net.william278.huskhomes.HuskHomes;
 import net.william278.huskhomes.user.BukkitUser;
 import net.william278.huskhomes.user.OnlineUser;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.logging.Level;
 
 /**
  * A hook that hooks into the Vault API to provide economy features.
@@ -61,6 +65,14 @@ public class VaultEconomyHook extends EconomyHook {
             final double amountToChange = Math.abs(currentBalance - Math.max(0d, currentBalance + amount));
             if (amount < 0d) {
                 economy.withdrawPlayer(bukkitPlayer, amountToChange);
+                plugin.runAsync(()->{
+                    EconomyResponse response = economy.depositPlayer(plugin.getSettings().getTaxAccount(), amountToChange);
+                    if(response.transactionSuccess()){
+                        plugin.log(Level.INFO,"Taxer account charged with balance: "+amountToChange);
+                    }else{
+                        plugin.log(Level.WARNING,"Taxer account charge failed: "+response.errorMessage+" balance: "+amountToChange);
+                    }
+                });
             } else {
                 economy.depositPlayer(bukkitPlayer, amountToChange);
             }

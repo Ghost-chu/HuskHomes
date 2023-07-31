@@ -260,6 +260,10 @@ public class Settings {
     @YamlKey("economy.enabled")
     private boolean economy = false;
 
+    @YamlComment("Transfer the economy from player to specific account (requires Vault)")
+    @YamlKey("economy.tax-account")
+    private String taxAccount = "Taxer";
+
     @YamlComment("Specify how many homes players can set for free, before they need to pay for more slots")
     @YamlKey("economy.free_home_slots")
     private int freeHomeSlots = 5;
@@ -544,6 +548,10 @@ public class Settings {
 
     public boolean doEconomy() {
         return economy;
+    }
+
+    public String getTaxAccount() {
+        return taxAccount;
     }
 
     public int getFreeHomeSlots() {
